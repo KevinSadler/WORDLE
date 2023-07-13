@@ -20,7 +20,7 @@
 }
 
 .App-body {
-  background-color: #282c34;
+  background-color: #000000;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -44,6 +44,35 @@
 
 .row{
   display: flex;
+}
+
+.correctPosition {
+  color: green;
+}
+
+.incorrectPosition {
+  color: yellow;
+}
+
+.incorrect {
+  color: grey
+}
+
+#inputField {
+  text-transform: uppercase;
+}
+
+.new-game-button {
+  background-color: rgb(0, 192, 0);
+  color: white;
+  height: 50px;
+  width: 100px;
+  border-radius: 10px;
+}
+
+.new-game-modal {
+  height: 400px;
+  width: 400px;
 }
 
 @keyframes App-logo-spin {
