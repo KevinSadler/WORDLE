@@ -1,17 +1,16 @@
-import React, { ButtonHTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
-import Modal from 'react-modal';
+import React, { ButtonHTMLAttributes, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import Modal from './modal';
 import './App.css';
 
 function Game() {
     const [attempts, updateAttempts] = useState<{ [key: string]: string }>({});
     const [currentGuess, setCurrentGuess] = useState<string>("");
     const [rowIndex, setRowIndex] = useState(1);
-    const [gameWon, setGameWon] = useState<boolean>(false);
-    const [modalOpen, setModalOpen] = useState<boolean>(true);
+    const [modalOpen, setModalOpen] = useState<boolean>(false);
+    const [inputDisabled, setInputDisabled] = useState<boolean>(false);
     const inputRef = useRef<HTMLInputElement | null>(null);
-    const newGameButtonRef = useRef<HTMLButtonElement | null>(null);
+    const modalButtonRef = useRef<HTMLButtonElement | null>(null);
     const answer = 'BUILD';
-    const gif = require('./Fireworks.gif')
 
     const handleInput = event => {
         let value: string = event.target.value;
@@ -20,6 +19,7 @@ function Game() {
 
     const handleSave = () => {
         if (currentGuess.length === 5) {
+            console.log("calling handle save");
             var newAttempt: { [key: string]: string } = {};
             for (var i = 0; i < currentGuess.length; i++) {
                 var key = `r${rowIndex}c${i + 1}`;
@@ -32,12 +32,16 @@ function Game() {
                 } else {
                     setClass(key, "incorrect")
                 }
-                if (currentGuess === answer) {
-                    setGameWon(true);
-                }
             };
             let updatedAttempts = Object.assign(newAttempt, attempts);
             updateAttempts(updatedAttempts);
+            if (currentGuess === answer) {
+                handleWin();
+                return;
+            } else if (rowIndex === 6) {
+                handleLoss();
+                return;
+            }
             setCurrentGuess("");
             setRowIndex(rowIndex + 1);
         }
@@ -47,28 +51,52 @@ function Game() {
         if (e.key === 'Enter') {
             handleSave();
         }
+    };
+
+    const handleWin = () => {
+        // setGifToUse(winGif);
+        setClass('appBody', 'winner');
+        setModalOpen(true);
+        setInputDisabled(true);
+    }
+
+    const handleLoss = () => {
+        // setGifToUse(loseGif);
+        setClass('appBody', 'loser');
+        setModalOpen(true);
+        setInputDisabled(true);
     }
 
     const handleNewGame = () => {
         setModalOpen(false);
-        console.log(modalOpen);
+        updateAttempts({});
+        setCurrentGuess("");
+        clearClasses();
+        setRowIndex(1);
+        setInputDisabled(false);
     }
 
     useEffect(() => {
+        function setFocus(e) {
+            if (!modalButtonRef.current?.contains(e.target) ) {
+                inputRef.current?.focus();
+                console.log("clicked outside button");
+            }
+        };
         document.addEventListener("click", setFocus);
+        return () => document.removeEventListener("click", setFocus);
     });
     
-    const setFocus = (e) => {
-        if (!newGameButtonRef.current?.contains(e.target)) {
-            inputRef.current?.focus();
-            console.log("clicked outside of button");
-        } else {
-            console.log("Clicked new game button");
-        }
-    };
+    const setClass = useCallback((id: string, className: string) => 
+        document.getElementById(id)?.classList.add(className),
+    []);
 
-    const setClass = (id: string, className: string) => {
-        document.getElementById(id)?.classList.add(className);
+    const clearClasses = () => {
+        for (const [key, value] of Object.entries(attempts)) {
+            document.getElementById(key)?.classList.remove('correctPosition', 'incorrectPosition', 'incorrect');
+            console.log(`Removing classes from ${key}`);
+        }
+        document.getElementById('appBody')?.classList.remove('winner', 'loser');
     }
 
     const logValues = () => {
@@ -78,19 +106,11 @@ function Game() {
     }
 
     return (
-        <div className="App-body">
-            {gameWon && 
-                <img src={gif}/> 
+        <div className="App-body" id='appBody'>
+            { modalOpen &&
+                <Modal buttonRef={modalButtonRef} title={"You Win!"} buttonClick={() => handleNewGame()} buttonTitle={"New Game?"}></Modal> 
             }
-            <Modal
-                id="new-game-button"
-                className="new-game-modal"
-                overlayClassName="new-game-modal"
-                isOpen={modalOpen}>
-                <div >
-                    <button ref={newGameButtonRef} onClick={() => handleNewGame()} className='new-game-button'>New Game?</button>
-                </div>
-            </Modal>
+            <h1>BBWordle</h1>
             <div className='row'>
                 <div className='letterBox' id='r1c1'>{rowIndex === 1 ? currentGuess[0] : attempts["r1c1"]}</div>
                 <div className='letterBox' id='r1c2'>{rowIndex === 1 ? currentGuess[1] : attempts["r1c2"]}</div>
@@ -141,7 +161,8 @@ function Game() {
                 onChange={handleInput} 
                 maxLength={5} 
                 autoFocus 
-                onKeyDown={(e) => handleKeyPress(e)}>
+                onKeyDown={(e) => handleKeyPress(e)}
+                disabled={inputDisabled}>
             </input>
             {/* <button type='button' onClick={() => logValues()}>Log</button> */}
             <script type="text/javascript" async src="https://tenor.com/embed.js"></script>

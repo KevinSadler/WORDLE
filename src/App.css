@@ -30,6 +30,15 @@
   color: white;
 }
 
+.winner {
+  background-image: url("Fireworks.gif");
+  background-repeat: no-repeat;
+}
+
+.loser {
+  background-image: url("game-over.gif");
+}
+
 /* button {
   background-color: red;
   min-height: 10vh;
@@ -44,6 +53,9 @@
 
 .row{
   display: flex;
+  justify-content: space-between;
+  width: 250px;
+  padding-bottom: 10px;
 }
 
 .correctPosition {
@@ -73,6 +85,17 @@
 .new-game-modal {
   height: 400px;
   width: 400px;
+}
+
+.letterBox {
+  border: solid;
+  border-width: 1px;
+  border-color: grey;
+  padding: 5px;
+  background-color: black;
+  width: 35px;
+  height: 35px;
+  text-align: center;
 }
 
 @keyframes App-logo-spin {
