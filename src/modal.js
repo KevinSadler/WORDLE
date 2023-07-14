@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Modal = ({buttonRef, title, buttonTitle, buttonClick}) => {
+const Modal = ({buttonRef, buttonTitle, buttonClick}) => {
     return (
         <div className='modal-background'>
             <div className='modalContainer'>

@@ -156,7 +156,7 @@ function Game() {
                 <div className='letterBox' id='r6c5'>{rowIndex === 6 ? currentGuess[4] : attempts["r6c5"]}</div>
             </div>
             { modalOpen &&
-                <Modal buttonRef={modalButtonRef} title={"You Win!"} buttonClick={() => handleNewGame()} buttonTitle={"Play Again?"}></Modal> 
+                <Modal buttonRef={modalButtonRef} buttonClick={() => handleNewGame()} buttonTitle={"Play Again?"}></Modal> 
             }
             <input 
                 ref={inputRef} 
