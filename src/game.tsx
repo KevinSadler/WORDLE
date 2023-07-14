@@ -1,16 +1,25 @@
 import React, { ButtonHTMLAttributes, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import Modal from './modal';
+import { Words } from './wordlist';
 import './App.css';
 
 function Game() {
     const [attempts, updateAttempts] = useState<{ [key: string]: string }>({});
+    const [answer, setAnswer] = useState<string>('');
     const [currentGuess, setCurrentGuess] = useState<string>("");
     const [rowIndex, setRowIndex] = useState(1);
     const [modalOpen, setModalOpen] = useState<boolean>(false);
     const [inputDisabled, setInputDisabled] = useState<boolean>(false);
     const inputRef = useRef<HTMLInputElement | null>(null);
     const modalButtonRef = useRef<HTMLButtonElement | null>(null);
-    const answer = 'BUILD';
+    const wordList: string[] = (Words);
+
+    useEffect(() => {
+        if (answer === '') {
+            setRandomWord();
+        }
+        console.log("Answer is: ", answer);
+    }, [answer])
 
     const handleInput = event => {
         let value: string = event.target.value;
@@ -47,6 +56,11 @@ function Game() {
         }
     }
 
+    const setRandomWord = () => {
+        const randomWord = wordList[Math.floor(Math.random() * wordList.length)];
+        setAnswer(randomWord);
+    }
+
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
             handleSave();
@@ -54,14 +68,12 @@ function Game() {
     };
 
     const handleWin = () => {
-        // setGifToUse(winGif);
         setClass('appBody', 'winner');
         setModalOpen(true);
         setInputDisabled(true);
     }
 
     const handleLoss = () => {
-        // setGifToUse(loseGif);
         setClass('appBody', 'loser');
         setModalOpen(true);
         setInputDisabled(true);
@@ -74,13 +86,13 @@ function Game() {
         clearClasses();
         setRowIndex(1);
         setInputDisabled(false);
+        setRandomWord();
     }
 
     useEffect(() => {
         function setFocus(e) {
             if (!modalButtonRef.current?.contains(e.target) ) {
                 inputRef.current?.focus();
-                console.log("clicked outside button");
             }
         };
         document.addEventListener("click", setFocus);
@@ -94,22 +106,12 @@ function Game() {
     const clearClasses = () => {
         for (const [key, value] of Object.entries(attempts)) {
             document.getElementById(key)?.classList.remove('correctPosition', 'incorrectPosition', 'incorrect');
-            console.log(`Removing classes from ${key}`);
         }
         document.getElementById('appBody')?.classList.remove('winner', 'loser');
     }
 
-    const logValues = () => {
-        console.log("attempts: ", attempts);
-        console.log("current guess: ", currentGuess);
-        console.log("row index: ", rowIndex);
-    }
-
     return (
         <div className="App-body" id='appBody'>
-            { modalOpen &&
-                <Modal buttonRef={modalButtonRef} title={"You Win!"} buttonClick={() => handleNewGame()} buttonTitle={"New Game?"}></Modal> 
-            }
             <h1>BBWordle</h1>
             <div className='row'>
                 <div className='letterBox' id='r1c1'>{rowIndex === 1 ? currentGuess[0] : attempts["r1c1"]}</div>
@@ -153,6 +155,9 @@ function Game() {
                 <div className='letterBox' id='r6c4'>{rowIndex === 6 ? currentGuess[3] : attempts["r6c4"]}</div>
                 <div className='letterBox' id='r6c5'>{rowIndex === 6 ? currentGuess[4] : attempts["r6c5"]}</div>
             </div>
+            { modalOpen &&
+                <Modal buttonRef={modalButtonRef} title={"You Win!"} buttonClick={() => handleNewGame()} buttonTitle={"Play Again?"}></Modal> 
+            }
             <input 
                 ref={inputRef} 
                 id='inputField' 
@@ -162,9 +167,9 @@ function Game() {
                 maxLength={5} 
                 autoFocus 
                 onKeyDown={(e) => handleKeyPress(e)}
-                disabled={inputDisabled}>
+                disabled={inputDisabled}
+                autoComplete='off'>
             </input>
-            {/* <button type='button' onClick={() => logValues()}>Log</button> */}
             <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
         </div>
 

@@ -33,23 +33,16 @@
 .winner {
   background-image: url("Fireworks.gif");
   background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100%;
 }
 
 .loser {
   background-image: url("game-over.gif");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 100%;
 }
-
-/* button {
-  background-color: red;
-  min-height: 10vh;
-  min-width: 10vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-} */
 
 .row{
   display: flex;
@@ -71,7 +64,11 @@
 }
 
 #inputField {
+  margin-top: 50px;
   text-transform: uppercase;
+  background: transparent;
+  border: none;
+  opacity: 0;
 }
 
 .new-game-button {
@@ -82,9 +79,8 @@
   border-radius: 10px;
 }
 
-.new-game-modal {
-  height: 400px;
-  width: 400px;
+.modal-background {
+  padding-top: 20px;
 }
 
 .letterBox {
@@ -96,6 +92,7 @@
   width: 35px;
   height: 35px;
   text-align: center;
+  font-weight: bold;
 }
 
 @keyframes App-logo-spin {
